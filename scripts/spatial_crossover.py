@@ -12,6 +12,22 @@ def closest_node(node, nodes):
     dist_2 = np.sum((nodes - node)**2, axis=1)
     return np.argmin(dist_2)
 
+def findDuplicate(node, nodes, index):
+    nodes= nodes[index: len(nodes)]
+    nodes = np.asarray(nodes)
+    dist_2 = np.sum((nodes - node)**2, axis=1)
+    return np.where(dist_2 == 0)
+
+def eleminateDuplicates(start, route):
+    for i in range(start, len(route)):
+      duplicate=findDuplicate(route[i],route, i)
+      duplicate=duplicate[0]
+      if len(duplicate) > 1:
+        print("duplicate", duplicate)
+        newRoute=route[:i] + route[i+duplicate[1]:]
+        return eleminateDuplicates(i, newRoute)
+    return route
+
 def crossover(route1, route2):
   randomNumber = math.floor(random.random()*len(route1))
   crossoverPoint1 = route1[randomNumber]
@@ -58,8 +74,8 @@ class SpatialOnePointCrossover(Crossover):
     #print(protectedArea.shape)
     
     childs=crossover(parent1,parent2)
-    child_1= childs[0]
-    child_2= childs[1]
+    child_1= eleminateDuplicates(0, childs[0])
+    child_2= eleminateDuplicates(0, childs[1]) 
         
     return np.array([[parent1_index, list(child_1)], [parent2_index, list(child_2)]])
 

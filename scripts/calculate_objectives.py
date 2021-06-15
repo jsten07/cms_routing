@@ -34,7 +34,7 @@ def calculate_time_differences(routes, startTime, endTime, timeGrid):
     total_seconds = difference.total_seconds()
     minutes = total_seconds/60
     timeDif.append(float(minutes) ** 2)
- print("timeDif", timeDif)
+ #print("timeDif", timeDif)
  return(np.array(timeDif))
 
 

@@ -63,7 +63,7 @@ from pymoo.algorithms.nsga2 import NSGA2
 from pymoo.factory import get_sampling, get_crossover, get_mutation
 algorithm = NSGA2(
  pop_size=10,
- n_offsprings= 2,
+ n_offsprings= 10,
  sampling=get_sampling("spatial"),
  crossover=get_crossover("spatial_one_point_crossover", n_points = 1.0),
  mutation=get_mutation("spatial_n_point_mutation", prob = 1.0),
@@ -81,9 +81,9 @@ res = minimize(problem,
                save_history=True,   
                verbose=True)
 
-print(res)
-print(res.X)
-print(res.F)
+#print(res)
+#print(res.X)
+#print(res.F)
 
 #save final land use maps and corresponding values of profit and area of natural vegetation for each map
 np.save("./routes",res.X)
