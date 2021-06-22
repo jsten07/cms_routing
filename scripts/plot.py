@@ -29,22 +29,20 @@ route_minfuelUSe = maps[np.argmin(results[:,1], axis=0)][1]
 
 routeDisplay=   np.stack(route_minTime, axis=-1)
 routeDisplay2=   np.stack(route_minfuelUSe, axis=-1)
-timeGrid = np.load("first_prediction.npy", allow_pickle=True)
+timeGrid = np.load("masked_prediction.npy", allow_pickle=True)
 timeGrid = timeGrid[250:750, 1200:2200]
-timeGrid = np.where((timeGrid < -1.9) & (timeGrid > -2), 1000, timeGrid)
-timeGrid = np.where(timeGrid >999, timeGrid, (timeGrid*timeGrid) +2)
-timeGrid = np.where(timeGrid >999, timeGrid, (10/timeGrid))
+timeGrid = np.where(timeGrid < 0, 1000, 10000/(timeGrid*30.87))
 
 plt.figure(figsize=(14,7))
 # Costs
-plt.imshow(timeGrid, aspect='auto', vmin=np.min(timeGrid), vmax=10);
+plt.imshow(timeGrid, aspect='auto', vmin=np.min(timeGrid), vmax=50);
 # Route
 plt.plot(routeDisplay[1],routeDisplay[0], 'r')
 plt.plot(routeDisplay2[1],routeDisplay2[0], 'b')
 # Start/end points
 plt.plot(startpoint[1], startpoint[0], 'k^', markersize=15)
 plt.plot(endpoint[1], endpoint[0], 'k*', markersize=15)
-# plt.gca().invert_yaxis();
+#plt.gca().invert_yaxis();
 
 def find_nearest(array, value):
     idx = np.argmin(np.abs(array - value))

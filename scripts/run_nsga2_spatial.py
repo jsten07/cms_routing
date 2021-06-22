@@ -33,13 +33,11 @@ from calculate_objectives import calculate_fuelUse
 startpoint=(332,122)
 endpoint= (233,901)
 
-startTime="22.06.2021 12:00"
-endTime="23.06.2021 11:00"
-timeGrid = np.load("first_prediction.npy", allow_pickle=True)#
+startTime="12.06.2021 12:00"
+endTime="30.06.2021 18:00"
+timeGrid = np.load("masked_prediction.npy", allow_pickle=True)
 timeGrid = timeGrid[250:750, 1200:2200]
-timeGrid = np.where((timeGrid < -1.9) & (timeGrid > -2), 1000, timeGrid)
-timeGrid = np.where(timeGrid >999, timeGrid, (timeGrid*timeGrid+2))
-timeGrid = np.where(timeGrid >999, timeGrid, (10/timeGrid)*0.1)
+timeGrid = np.where(timeGrid < 0, 1000, 10000/(timeGrid*30.87))
 
 # read input data for objectives
 

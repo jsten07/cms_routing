@@ -46,7 +46,7 @@ def calculate_fuelUse(routes,timeGrid):
  for route in routes:
   duration = calculateTime(route[1], timeGrid)
   seconds = duration.total_seconds()
-  fuelUse = float(seconds) * 100
+  fuelUse = (float(seconds) /360/24)*200
   all_fuel.append(fuelUse)
 
  return(np.array(all_fuel))
