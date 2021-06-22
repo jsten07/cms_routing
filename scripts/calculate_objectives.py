@@ -26,8 +26,8 @@ def calculate_time_differences(routes, startTime, endTime, timeGrid):
  #print(routes)
  # loop over the individuals in the population
  for route in routes:
-    startTime_object = datetime.strptime(startTime, "%H:%M" )
-    endTime_object = datetime.strptime(endTime, "%H:%M" )
+    startTime_object = datetime.strptime(startTime, "%d.%m.%Y %H:%M" )
+    endTime_object = datetime.strptime(endTime, "%d.%m.%Y %H:%M" )
     duration = calculateTime(route[1], timeGrid)
     eta = startTime_object + duration
     difference= endTime_object-eta

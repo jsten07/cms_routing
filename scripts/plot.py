@@ -1,15 +1,17 @@
+from datetime import time, timedelta
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import matplotlib.patches as mpatches
 import matplotlib.colors
+import math
 
 
 from calculate_objectives import calculate_time_differences
 from calculate_objectives import calculate_fuelUse
 
-startpoint=(1,10)
-endpoint= (99,99)
+startpoint=(330,120)
+endpoint= (230,900)
 
 
 
@@ -27,27 +29,42 @@ route_minfuelUSe = maps[np.argmin(results[:,1], axis=0)][1]
 
 routeDisplay=   np.stack(route_minTime, axis=-1)
 routeDisplay2=   np.stack(route_minfuelUSe, axis=-1)
-s=(100,100)
-timeGrid= np.zeros(s)
+timeGrid = np.load("first_prediction.npy", allow_pickle=True)
+timeGrid = timeGrid[250:750, 1200:2200]
+timeGrid = np.where((timeGrid < -1.9) & (timeGrid > -2), 1000, timeGrid)
+timeGrid = np.where(timeGrid >999, timeGrid, (timeGrid*timeGrid) +2)
+timeGrid = np.where(timeGrid >999, timeGrid, (10/timeGrid))
+
 plt.figure(figsize=(14,7))
 # Costs
-plt.imshow(timeGrid, aspect='auto', vmin=np.min(timeGrid), vmax=np.max(timeGrid));
+plt.imshow(timeGrid, aspect='auto', vmin=np.min(timeGrid), vmax=10);
 # Route
 plt.plot(routeDisplay[1],routeDisplay[0], 'r')
 plt.plot(routeDisplay2[1],routeDisplay2[0], 'b')
 # Start/end points
 plt.plot(startpoint[1], startpoint[0], 'k^', markersize=15)
 plt.plot(endpoint[1], endpoint[0], 'k*', markersize=15)
-plt.gca().invert_yaxis();
+# plt.gca().invert_yaxis();
 
 def find_nearest(array, value):
     idx = np.argmin(np.abs(array - value))
     return idx
 
 # Pareto Front
+def transformTick(timeDifference):
+    td = timedelta(minutes=timeDifference)
+    return ".".join(str(td).split(':')[:2])
+    
+
+timeDiffs= results[:,0]
+timeDiff = np.array([math.sqrt(x) for x in timeDiffs])
 
 f1, ax1 = plt.subplots(1)
-plt.scatter(results[:,0],results[:,1])
+plt.scatter(timeDiff,results[:,1])
+a= ax1.get_xticks().tolist()
+print(a)
+result= map(transformTick, a)
+ax1.set_xticklabels(result)
 ax1.set_title("Objective Space")
 ax1.set_xlabel('Time Difference')
 ax1.set_ylabel('Fuel Use')
