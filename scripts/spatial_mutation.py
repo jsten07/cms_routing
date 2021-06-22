@@ -40,11 +40,11 @@ def mutation(crossover_child, timeGrid):
   
 # class that performs the mutation
 class SpatialNPointMutation(Mutation):
-    def __init__(self, prob=None,point_mutation_probability=0.01):
+    def __init__(self, timeGrid, prob=None,point_mutation_probability=0.01):
         super().__init__()
         self.prob = prob
         self.point_mutation_probability = point_mutation_probability
-        self.TimeGrid= [[random.random() for i in range(100)] for j in range(100)]
+        self.TimeGrid= [[random.random() for i in range(timeGrid.shape[1])] for j in range(timeGrid.shape[0])]
     def _do(self, problem, X, **kwargs):
         offspring=[]
         #print(X)

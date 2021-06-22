@@ -14,13 +14,14 @@ def makeArrays(route):
 
 
 # make initial population for genetic algorithm
-def initialize_spatial(pop_size, startpoint, endpoint, N):
+def initialize_spatial(pop_size, startpoint, endpoint, timeGrid):
  all_routes = []
  # read land use map dedending on the year
  # iterate to get multiple realizations for the initial population
+ print(timeGrid.shape[0])
  for i in range(1,pop_size+1):
-     timeGrid= [[random.random() for i in range(N)] for j in range(N)]
-     route, weight = route_through_array(timeGrid, startpoint, endpoint, fully_connected=False, geometric=True)
+     timeGridNew= [[random.random() for i in range(timeGrid.shape[1])] for j in range(timeGrid.shape[0])]
+     route, weight = route_through_array(timeGridNew, startpoint, endpoint, fully_connected=False, geometric=True)
      route= makeArrays(route)
      all_routes.append([i, route])
 

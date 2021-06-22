@@ -5,7 +5,6 @@ import math
 
 from pymoo.model.crossover import Crossover
 
-N =100
 
 def closest_node(node, nodes):
     nodes = np.asarray(nodes)
@@ -20,7 +19,7 @@ def findDuplicate(node, nodes, index):
 
 def eleminateDuplicates(start, route):
     for i in range(start, len(route)):
-      duplicate=findDuplicate(route[i],route, i)
+      duplicate=findDuplicate(route[i], route, i)
       duplicate=duplicate[0]
       if len(duplicate) > 1:
         print("duplicate", duplicate)
@@ -28,13 +27,14 @@ def eleminateDuplicates(start, route):
         return eleminateDuplicates(i, newRoute)
     return route
 
-def crossover(route1, route2):
+def crossover(route1, route2, timeGrid):
   randomNumber = math.floor(random.random()*len(route1))
   crossoverPoint1 = route1[randomNumber]
   index= closest_node(crossoverPoint1, route2)
   crossoverPoint2 = route2[index]
-  newGrid= [[random.random() for i in range(N)] for j in range(N)]
-  crossoverRoute, weight = route_through_array(newGrid, crossoverPoint1[0:2], crossoverPoint2[0:2], fully_connected=False, geometric=True)
+  
+  
+  crossoverRoute, weight = route_through_array(timeGrid, crossoverPoint1[0:2], crossoverPoint2[0:2], fully_connected=False, geometric=True)
   child1= []
   child2= []
   for i in range(randomNumber):
@@ -56,9 +56,10 @@ class SpatialOnePointCrossover(Crossover):
 
 
 
- def __init__(self,n_points, **kwargs):
+ def __init__(self, timeGrid, n_points, **kwargs):
     super().__init__(2, 2, 1.0) # (n_parents,n_offsprings,probability)
     self.n_points = n_points
+    self.TimeGrid = newGrid= [[random.random() for i in range(timeGrid.shape[1])] for j in range(timeGrid.shape[0])]
  def _do(self, problem, X, **kwargs):
     #print(X)
     _, n_matings= X.shape[0],X.shape[1]
@@ -73,7 +74,7 @@ class SpatialOnePointCrossover(Crossover):
     #print(rows)
     #print(protectedArea.shape)
     
-    childs=crossover(parent1,parent2)
+    childs=crossover(parent1,parent2, self.TimeGrid)
     child_1= eleminateDuplicates(0, childs[0])
     child_2= eleminateDuplicates(0, childs[1]) 
         

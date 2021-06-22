@@ -30,12 +30,16 @@ from pymoo.optimize import minimize
 from calculate_objectives import calculate_time_differences 
 from calculate_objectives import calculate_fuelUse
 
-startpoint=(1,10)
-endpoint= (99,99)
-startTime="15:00"
-endTime="18:00"
-N = 100
-timeGrid= [[random.random() for i in range(N)] for j in range(N)]
+startpoint=(330,120)
+endpoint= (230,900)
+
+startTime="12:00"
+endTime="23:00"
+timeGrid = np.load("first_prediction.npy", allow_pickle=True)#
+timeGrid = timeGrid[250:750, 1200:2200]
+timeGrid = np.where((timeGrid < -1.9) & (timeGrid > -2), 1000, timeGrid)
+timeGrid = np.where(timeGrid >999, timeGrid, (timeGrid*timeGrid+2))
+timeGrid = np.where(timeGrid >999, timeGrid, (10/timeGrid)*0.001)
 
 # read input data for objectives
 
@@ -62,11 +66,11 @@ print(problem)
 from pymoo.algorithms.nsga2 import NSGA2
 from pymoo.factory import get_sampling, get_crossover, get_mutation
 algorithm = NSGA2(
- pop_size=10,
+ pop_size=20,
  n_offsprings= 10,
- sampling=get_sampling("spatial"),
- crossover=get_crossover("spatial_one_point_crossover", n_points = 1.0),
- mutation=get_mutation("spatial_n_point_mutation", prob = 1.0),
+ sampling=get_sampling("spatial", startpoint= startpoint, endpoint=endpoint, timeGrid = timeGrid),
+ crossover=get_crossover("spatial_one_point_crossover", timeGrid = timeGrid, n_points = 1.0),
+ mutation=get_mutation("spatial_n_point_mutation", timeGrid=timeGrid, prob = 1.0),
  eliminate_duplicates=False
  )
 
