@@ -29,9 +29,11 @@ route_minfuelUSe = maps[np.argmin(results[:,1], axis=0)][1]
 
 routeDisplay=   np.stack(route_minTime, axis=-1)
 routeDisplay2=   np.stack(route_minfuelUSe, axis=-1)
-timeGrid = np.load("masked_prediction.npy", allow_pickle=True)
+kmGridEW= np.load("lengthGridEW.npy")
+timeGrid = np.load("predictions/SOG_E.npy", allow_pickle=True)
+timeGrid = np.where(timeGrid < 0, 1000, (kmGridEW*1000)/(timeGrid*30.87))
 timeGrid = timeGrid[250:750, 1200:2200]
-timeGrid = np.where(timeGrid < 0, 1000, 10000/(timeGrid*30.87))
+
 
 plt.figure(figsize=(14,7))
 # Costs

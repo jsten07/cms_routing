@@ -2,15 +2,61 @@ import numpy as np
 import pickle
 from datetime import datetime, timedelta
 
+def makeArrays(route):
+    routeNew = []
+    for x in route:
+      routeNew.append(list(x))
+    return routeNew
 
-def calculateTime(route, timeGrid):
+
+def calculateBearing(route):
+    for i in range(len(route)-1):
+        if route[i][0]< route[i+1][0]:
+            route[i].append(0) #up
+        elif route[i][0] > route[i+1][0]:
+            route[i].append(1) # down
+        elif route[i][1] < route[i+1][1]:
+            route[i].append(2) #right
+        elif route[i][1] > route[i+1][1]:
+            route[i].append(3) #left
+        else:
+             route[i].append("error")
+    return route
+    
+def calculateTime(route, timeGrids):
     #print("single route")
     #print(route)
     sumTime = 0
-    for x in route:
-      sumTime = sumTime + timeGrid[x[0]][x[1]]
-    minutes_added = timedelta(minutes  = sumTime)
-    return minutes_added
+    routeList = makeArrays(route)
+    routeWithBearing = calculateBearing(routeList)
+    for x in range(len(routeWithBearing)-1):
+      coordinate = routeWithBearing[x]
+      bearing = coordinate[2]
+      #print(speedIndex, bearing)
+      #print(coordinate)
+      #array = np.array(timeGrids[speedIndex][bearing])
+      #print(array.shape)
+      timeGrid =  timeGrids[bearing]
+      sumTime = sumTime + timeGrid[coordinate[0]][coordinate[1]]
+    hours_added = timedelta(minutes  = sumTime)
+    return hours_added
+
+def calculateFuelUse(route, timeGrids):
+    #print("single route")
+    #print(route)
+    fuelUse = 0
+    routeList = makeArrays(route)
+    routeWithBearing = calculateBearing(routeList)
+    #print("timeGrid", timeGrids[0][10][10])
+    for x in range(len(routeWithBearing)-1):
+      coordinate = routeWithBearing[x]
+        
+      #print(timeGrids[speedIndex][bearing])
+      #print(coordinate)
+      bearing = coordinate[2]
+      timeGrid = timeGrids[bearing]
+      fuelUse = fuelUse + (timeGrid[coordinate[0]][coordinate[1]]/60 * 154*33200)
+    return fuelUse
 
 def makeArrays(route):
     routeNew = []
@@ -19,7 +65,7 @@ def makeArrays(route):
     return routeNew
 
 # calculate the total yield for sugarcane, soy, cotton and pasture
-def calculate_time_differences(routes, startTime, endTime, timeGrid):
+def calculate_time_differences(routes, startTime, endTime, timeGrids):
 
  timeDif= []
  #print("routes")
@@ -28,7 +74,7 @@ def calculate_time_differences(routes, startTime, endTime, timeGrid):
  for route in routes:
     startTime_object = datetime.strptime(startTime, "%d.%m.%Y %H:%M" )
     endTime_object = datetime.strptime(endTime, "%d.%m.%Y %H:%M" )
-    duration = calculateTime(route[1], timeGrid)
+    duration = calculateTime(route[1], timeGrids)
     eta = startTime_object + duration
     difference= endTime_object-eta
     total_seconds = difference.total_seconds()
@@ -39,15 +85,14 @@ def calculate_time_differences(routes, startTime, endTime, timeGrid):
 
 
 
-def calculate_fuelUse(routes,timeGrid):
+def calculate_fuelUse(routes,timeGrids):
 
  # loop over the individuals in the population
  all_fuel = []
  for route in routes:
-  duration = calculateTime(route[1], timeGrid)
-  seconds = duration.total_seconds()
-  fuelUse = (float(seconds) /360/24)*200
-  all_fuel.append(fuelUse)
+  fuelUse = calculateFuelUse(route[1], timeGrids)
+  fuelUseT = fuelUse/1000000
+  all_fuel.append(fuelUseT)
 
  return(np.array(all_fuel))
 
