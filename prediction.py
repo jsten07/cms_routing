@@ -196,6 +196,7 @@ def get_cmems(date, UN_CMEMS, PW_CMEMS):
     url = 'nrt.cmems-du.eu'
     path_w = 'Core/GLOBAL_ANALYSIS_FORECAST_WAV_001_027/global-analysis-forecast-wav-001-027/' + path_date
     path_p = 'Core/GLOBAL_ANALYSIS_FORECAST_PHY_001_024/global-analysis-forecast-phy-001-024/' + path_date
+    print(path_w)
 
     filename_w= 'mfwamglocep_' + date + '00_R' + date + '.nc'
     filename_p = 'mercatorpsy4v3r1_gl12_mean_' + date + '_R' + date + '.nc'
