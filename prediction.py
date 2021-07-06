@@ -46,6 +46,7 @@ def download(url, user, passwd, ftp_path, filename):
 
 # Check contents
 
+"""
 with ftplib.FTP('nrt.cmems-du.eu') as ftp:
     
     try:
@@ -67,7 +68,7 @@ with ftplib.FTP('nrt.cmems-du.eu') as ftp:
             
     except ftplib.all_errors as e:
         print('FTP error:', e)
-
+"""
 
 
 def calc_relative_direction(ship_dir, ww_dir):
