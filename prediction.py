@@ -180,7 +180,7 @@ import numpy.ma as ma
 SOG_pred = np.ma.masked_where(np.flipud(np.ma.getmask(ds[parameter][0, :, :])), SOG_pred.reshape(dim))
 SOG_pred.fill_value = -32767
 # SOG_pred =np.flipud(SOG_pred)
-
+'''
 
 # create actual grids for different ship directions
 ship_param = 12
@@ -188,15 +188,14 @@ SOG_N = prepare_grid(model, ds, ds_p, ship_param, "N")
 SOG_E = prepare_grid(model, ds, ds_p, ship_param, "E")
 SOG_S = prepare_grid(model, ds, ds_p, ship_param, "S")
 SOG_W = prepare_grid(model, ds, ds_p, ship_param, "W")
-'''
+
 
 
 def get_cmems(date, UN_CMEMS, PW_CMEMS):
-    path_date = date[0:3] + "/" + date[4:5]
+    path_date = date[0:4] + "/" + date[4:6]
     url = 'nrt.cmems-du.eu'
     path_w = 'Core/GLOBAL_ANALYSIS_FORECAST_WAV_001_027/global-analysis-forecast-wav-001-027/' + path_date
     path_p = 'Core/GLOBAL_ANALYSIS_FORECAST_PHY_001_024/global-analysis-forecast-phy-001-024/' + path_date
-    print(path_w)
 
     filename_w= 'mfwamglocep_' + date + '00_R' + date + '.nc'
     filename_p = 'mercatorpsy4v3r1_gl12_mean_' + date + '_R' + date + '.nc'
