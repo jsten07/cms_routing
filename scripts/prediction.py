@@ -37,9 +37,10 @@ def download(url, user, passwd, ftp_path, filename):
             
             # Download file (if there is not yet a local copy)
             if os.path.isfile(filename):
-                print("There is already a local copy of {}".format(filename))
+                print("There is already a local copy for this date ({})".format(filename))
             else:
                 with open(filename, 'wb') as fp:
+                    print("Downloading ... ({})".format(filename))
                     ftp.retrbinary('RETR {}'.format(filename), fp.write)
         
         except ftplib.all_errors as e:
@@ -206,7 +207,6 @@ def get_cmems(date_start, date_end, UN_CMEMS, PW_CMEMS):
 
     with ftplib.FTP(url) as ftp:
         try:
-
             ftp.login(UN_CMEMS, PW_CMEMS)
             ftp.cwd(path_w)
             files = ftp.nlst()
