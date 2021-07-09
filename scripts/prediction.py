@@ -9,7 +9,7 @@ Original file is located at
 
 
 # Load model
-# from joblib import dump, load
+from joblib import dump, load
 model_name = "DTR_model"
 model = load(model_name + '.joblib')
 from datetime import datetime
