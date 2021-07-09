@@ -9,9 +9,10 @@ Original file is located at
 
 
 # Load model
-from joblib import dump, load
+# from joblib import dump, load
 model_name = "DTR_model"
 model = load(model_name + '.joblib')
+from datetime import datetime
 # model = load("DTR_model.joblib")
 
 """# Load CMEMS data
@@ -182,23 +183,45 @@ SOG_pred.fill_value = -32767
 # SOG_pred =np.flipud(SOG_pred)
 '''
 
-# create actual grids for different ship directions
-ship_param = 12
-SOG_N = prepare_grid(model, ds, ds_p, ship_param, "N")
-SOG_E = prepare_grid(model, ds, ds_p, ship_param, "E")
-SOG_S = prepare_grid(model, ds, ds_p, ship_param, "S")
-SOG_W = prepare_grid(model, ds, ds_p, ship_param, "W")
+# # create actual grids for different ship directions
+# ship_param = 12
+# SOG_N = prepare_grid(model, ds, ds_p, ship_param, "N")
+# SOG_E = prepare_grid(model, ds, ds_p, ship_param, "E")
+# SOG_S = prepare_grid(model, ds, ds_p, ship_param, "S")
+# SOG_W = prepare_grid(model, ds, ds_p, ship_param, "W")
+
+# def cmems_paths(date):
 
 
+def get_cmems(date_start, date_end, UN_CMEMS, PW_CMEMS):
+    date_s = datetime.strptime(date_start, "%d.%m.%Y %H:%M")
+    date_e = datetime.strptime(date_end, "%d.%m.%Y %H:%M")
 
-def get_cmems(date, UN_CMEMS, PW_CMEMS):
+    date_m = date_s + (date_e - date_s) / 2
+    date = date_m.strftime("%Y%m%d")
+    today = datetime.now().strftime("%Y%m%d")
+
     path_date = date[0:4] + "/" + date[4:6]
     url = 'nrt.cmems-du.eu'
     path_w = 'Core/GLOBAL_ANALYSIS_FORECAST_WAV_001_027/global-analysis-forecast-wav-001-027/' + path_date
     path_p = 'Core/GLOBAL_ANALYSIS_FORECAST_PHY_001_024/global-analysis-forecast-phy-001-024/' + path_date
 
-    filename_w= 'mfwamglocep_' + date + '00_R' + date + '.nc'
-    filename_p = 'mercatorpsy4v3r1_gl12_mean_' + date + '_R' + date + '.nc'
+    with ftplib.FTP(url) as ftp:
+        try:
+
+            ftp.login(UN_CMEMS, PW_CMEMS)
+            ftp.cwd(path_w)
+            files = ftp.nlst()
+            files = [i for i in files if date in i]
+            filename_w = files[0]
+            ftp.cwd('/')
+            ftp.cwd(path_p)
+            files = ftp.nlst()
+            files = [i for i in files if date in i]
+            filename_p = files[0]
+        except ftplib.all_errors as e:
+            print('FTP error:', e)
+
     download(url, UN_CMEMS, PW_CMEMS, path_w, filename_w)
     download(url, UN_CMEMS, PW_CMEMS, path_p, filename_p)
 
