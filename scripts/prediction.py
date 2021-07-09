@@ -10,10 +10,10 @@ Original file is located at
 
 # Load model
 from joblib import dump, load
-model_name = "DTR_model"
-model = load('../models/' + model_name + '.joblib')
-from datetime import datetime
-# model = load("DTR_model.joblib")
+# model_name = "DTR_model"
+# model = load('../models/' + model_name + '.joblib')
+# from datetime import datetime
+# # model = load("DTR_model.joblib")
 
 """# Load CMEMS data
 Try to use WMS or other more flexibel data retrieval
@@ -143,15 +143,12 @@ def concatenate_cmems(cm_wave, cm_phy, ship_param, ship_dir):
               columns=["Draft", "VHM0", "VTPK", "thetao", "so", "dir_4"])  # 1st row as the column names
   return X_pred
 
-def prepare_grid(model, cm_wave, cm_phy, ship_param, ship_dir):
+def prepare_grid(cm_wave, cm_phy, ship_param, ship_dir):
   """
   prepare grid of SOGs
 
   Parameters
   ----------
-  model : joblib model
-    model used for prediction; currently need the independent variables 
-    "Draft", "VHM0", "VTPK", "thetao", "so", "dir_4"
   cm_wave : net4CDF dataset
     netcdf file cmems wave
   cm_phy : net4CDF dataset
@@ -169,6 +166,7 @@ def prepare_grid(model, cm_wave, cm_phy, ship_param, ship_dir):
   dim = input.shape
 
   # predict SOG
+  model = load('../models/DTR_model.joblib') # import model
   SOG_pred = model.predict(X_pred)
   SOG_pred = SOG_pred.reshape(dim) # reshape to 'coordinates'
   SOG_pred[input < -30000] = -5 # -32767.0 # mask data with negative value
