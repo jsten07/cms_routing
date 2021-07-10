@@ -24,6 +24,7 @@ import os
 import numpy as np
 import netCDF4 as nc
 import pandas as pd
+from datetime import datetime
 
 def download(url, user, passwd, ftp_path, filename):
     
