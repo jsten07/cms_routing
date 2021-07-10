@@ -58,9 +58,7 @@ endpoint= (233,901)
 
 startTime="12.06.2021 12:00"
 endTime="30.06.2021 18:00"
-timeGrid = np.load("masked_prediction.npy", allow_pickle=True)
-timeGrid = timeGrid[250:750, 1200:2200]
-timeGrid = np.where(timeGrid < 0, 1000, 10000/(timeGrid*30.87))
+
 
 # read input data for objectives
 

@@ -18,7 +18,7 @@ def initialize_spatial(pop_size, startpoint, endpoint, timeGrid):
  all_routes = []
  # read land use map dedending on the year
  # iterate to get multiple realizations for the initial population
- print(timeGrid.shape[0])
+ #print(timeGrid.shape[0])
  for i in range(1,pop_size+1):
      timeGridNew= [[random.random() for i in range(timeGrid.shape[1])] for j in range(timeGrid.shape[0])]
      route, weight = route_through_array(timeGridNew, startpoint, endpoint, fully_connected=False, geometric=True)
