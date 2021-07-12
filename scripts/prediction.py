@@ -127,14 +127,14 @@ def concatenate_cmems(cm_wave, cm_phy, ship_param, ship_dir):
   l = np.prod(dim) # get number of "pixel"
 
   # extract parameters from cmems dataset and reshape to array with dimension of 1 x number of pixel
-  vhm = (np.flipud(cm_wave["VHM0"][0, :, :]).data).reshape(l, 1)
-  vtm = (np.flipud(cm_wave["VTPK"][0, :, :]).data).reshape(l, 1)
-  temp = (np.flipud(cm_phy["thetao"][0, 1, :, :]).data).reshape(l, 1)
-  sal = (np.flipud(cm_phy["so"][0, 1, :, :]).data).reshape(l, 1)
+  vhm = (np.flipud(cm_wave["VHM0"][0, :, :])).reshape(l, 1)
+  vtm = (np.flipud(cm_wave["VTPK"][0, :, :])).reshape(l, 1)
+  temp = (np.flipud(cm_phy["thetao"][0, 1, :, :])).reshape(l, 1)
+  sal = (np.flipud(cm_phy["so"][0, 1, :, :])).reshape(l, 1)
   # create column for ship parameter 
   ship = np.full((l, 1), ship_param) 
   # calculate relative direction of wind depending on ship direction
-  dir = calc_relative_direction(ship_dir, (np.flipud(cm_wave["VMDR_WW"][0, :, :]).data).reshape(l, 1))
+  dir = calc_relative_direction(ship_dir, (np.flipud(cm_wave["VMDR_WW"][0, :, :])).reshape(l, 1))
 
   # concatenate parameters
   a = np.concatenate((ship, vhm, vtm, temp, sal, dir), axis=1)
@@ -168,7 +168,7 @@ def prepare_grid(cm_wave, cm_phy, ship_param, ship_dir):
   dim = input.shape
 
   # predict SOG
-  model = load('../models/DTR_model.joblib') # import model
+  model = load('models/DTR_model.joblib') # import model
   SOG_pred = model.predict(X_pred)
   SOG_pred = SOG_pred.reshape(dim) # reshape to 'coordinates'
   SOG_pred[input < -30000] = -5 # -32767.0 # mask data with negative value
