@@ -31,6 +31,7 @@ def calculateTime(route, timeGrids):
     routeWithBearing = calculateBearing(routeList)
     for x in range(len(routeWithBearing)-1):
       coordinate = routeWithBearing[x]
+      #print(coordinate)
       bearing = coordinate[2]
       #print(speedIndex, bearing)
       #print(coordinate)

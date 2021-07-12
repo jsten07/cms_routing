@@ -32,7 +32,7 @@ def eleminateDuplicates(start, route):
       duplicate=findDuplicate(route[i], route, i)
       duplicate=duplicate[0]
       if len(duplicate) > 1:
-        print("duplicate", duplicate)
+        #print("duplicate", duplicate)
         newRoute=route[:i] + route[i+duplicate[1]:]
         return eleminateDuplicates(i, newRoute)
     return route

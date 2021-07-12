@@ -18,7 +18,7 @@ N=100
 # function to randomly change a certain patch
 
 def mutation(crossover_child, timeGrid):
-    print(crossover_child)
+    #print(crossover_child)
     crossover_child_split_list= []
     
     crossover_child = makeArrays(crossover_child)
@@ -29,7 +29,7 @@ def mutation(crossover_child, timeGrid):
     endIndex= math.floor(startIndex + (random.random() * (len(crossover_child)-startIndex)))
     endpoint= crossover_child[endIndex]
 
-    print(startpoint, endpoint)
+    #print(startpoint, endpoint)
     # recalculate route from end point of list 1 to sarting point of list 3
     route, weight = route_through_array(timeGrid, startpoint[0:2], endpoint[0:2], 
                                         fully_connected=False, geometric=True)
@@ -42,7 +42,7 @@ def mutation(crossover_child, timeGrid):
     third_component = makeArrays(crossover_child[endIndex:len(crossover_child)])
     #combine all the sections to a final mutated route
     mutated_child = first_component + second_component + third_component 
-    print(mutated_child)
+    #print(mutated_child)
     
     return mutated_child
 
