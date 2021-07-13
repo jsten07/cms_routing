@@ -164,7 +164,7 @@ def prepare_grid(cm_wave, cm_phy, ship_param, ship_dir, model):
   X_pred = concatenate_cmems(cm_wave, cm_phy, ship_param, ship_dir)
   
   # extract shape from cmems data
-  input = (np.flipud(cm_wave["VHM0"][0, :, :]).data)
+  input = (np.flipud(cm_wave["VHM0"][0, :, :]))
   dim = input.shape
 
   # predict SOG
