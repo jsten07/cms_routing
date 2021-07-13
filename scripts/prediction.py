@@ -189,7 +189,7 @@ def calculateTimeGrid(SOG_E, SOG_N, SOG_S, SOG_W, AOI):
     timeGridE60= np.cbrt(60/constE)
     timeGridE = timeGridE[AOI[2]:AOI[3], AOI[0]:AOI[1]]
     timeGridE80 = timeGridE80[AOI[2]:AOI[3], AOI[0]:AOI[1]]
-    timeGridE60 = timeGridE80[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridE60 = timeGridE60[AOI[2]:AOI[3], AOI[0]:AOI[1]]
     timeGridE = np.where(timeGridE < 0, 10000, (kmGridEW*1000)/(timeGridE*30.87))
     timeGridE80 = np.where(timeGridE80 < 0, 10000, (kmGridEW*1000)/(timeGridE80*30.87))
     timeGridE60 = np.where(timeGridE60 < 0, 10000, (kmGridEW*1000)/(timeGridE60*30.87))
@@ -202,7 +202,7 @@ def calculateTimeGrid(SOG_E, SOG_N, SOG_S, SOG_W, AOI):
     timeGridN60= np.cbrt(60/constN)
     timeGridN = timeGridN[AOI[2]:AOI[3], AOI[0]:AOI[1]]
     timeGridN80 = timeGridN80[AOI[2]:AOI[3], AOI[0]:AOI[1]]
-    timeGridN60 = timeGridN80[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridN60 = timeGridN60[AOI[2]:AOI[3], AOI[0]:AOI[1]]
     timeGridN = np.where(timeGridN < 0, 10000, (kmGridNS*1000)/(timeGridN*30.87))
     timeGridN80 = np.where(timeGridN80 < 0, 10000, (kmGridNS*1000)/(timeGridN80*30.87))
     timeGridN60 = np.where(timeGridN60 < 0, 10000, (kmGridNS*1000)/(timeGridN60*30.87))
@@ -214,7 +214,7 @@ def calculateTimeGrid(SOG_E, SOG_N, SOG_S, SOG_W, AOI):
     timeGridS60= np.cbrt(60/constS)
     timeGridS = timeGridS[AOI[2]:AOI[3], AOI[0]:AOI[1]]
     timeGridS80 = timeGridS80[AOI[2]:AOI[3], AOI[0]:AOI[1]]
-    timeGridS60 = timeGridS80[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridS60 = timeGridS60[AOI[2]:AOI[3], AOI[0]:AOI[1]]
     timeGridS = np.where(timeGridS < 0, 10000, (kmGridNS*1000)/(timeGridS*30.87))
     timeGridS80 = np.where(timeGridS80 < 0, 10000, (kmGridNS*1000)/(timeGridS80*30.87))
     timeGridS60 = np.where(timeGridS60 < 0, 10000, (kmGridNS*1000)/(timeGridS60*30.87))
@@ -228,7 +228,7 @@ def calculateTimeGrid(SOG_E, SOG_N, SOG_S, SOG_W, AOI):
     timeGridW60= np.cbrt(60/constW)
     timeGridW = timeGridW[AOI[2]:AOI[3], AOI[0]:AOI[1]]
     timeGridW80 = timeGridW80[AOI[2]:AOI[3], AOI[0]:AOI[1]]
-    timeGridW60 = timeGridW80[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridW60 = timeGridW60[AOI[2]:AOI[3], AOI[0]:AOI[1]]
     timeGridW = np.where(timeGridW < 0, 10000, (kmGridEW*1000)/(timeGridW*30.87))
     timeGridW80 = np.where(timeGridW80 < 0, 10000, (kmGridEW*1000)/(timeGridW80*30.87))
     timeGridW60 = np.where(timeGridW60 < 0, 10000, (kmGridEW*1000)/(timeGridW60*30.87))
