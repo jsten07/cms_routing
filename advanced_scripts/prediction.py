@@ -7,9 +7,9 @@ Original file is located at
     https://colab.research.google.com/drive/1lcvaJYf5k-Y0mmlCYAF8kWQlr2P-eTwr
 """
 
-
 # Load model
 from joblib import dump, load
+
 # model_name = "DTR_model"
 # model = load('../models/' + model_name + '.joblib')
 # from datetime import datetime
@@ -26,16 +26,16 @@ import netCDF4 as nc
 import pandas as pd
 from datetime import datetime
 
+
 def download(url, user, passwd, ftp_path, filename):
-    
     with ftplib.FTP(url) as ftp:
-        
+
         try:
             ftp.login(user, passwd)
-            
+
             # Change directory
             ftp.cwd(ftp_path)
-            
+
             # Download file (if there is not yet a local copy)
             if os.path.isfile(filename):
                 print("There is already a local copy for this date ({})".format(filename))
@@ -43,182 +43,195 @@ def download(url, user, passwd, ftp_path, filename):
                 with open(filename, 'wb') as fp:
                     print("Downloading ... ({})".format(filename))
                     ftp.retrbinary('RETR {}'.format(filename), fp.write)
-        
+
         except ftplib.all_errors as e:
             print('FTP error:', e)
+
 
 # Check contents
 
 """
 with ftplib.FTP('nrt.cmems-du.eu') as ftp:
-    
+
     try:
         ftp.login(UN_CMEMS, PW_CMEMS)
-        
+
         # Change directory
         ftp.cwd('Core/GLOBAL_ANALYSIS_FORECAST_PHY_001_024/global-analysis-forecast-phy-001-024/2021/07')
-        
+
         # List directory contents with additional information
         ftp.retrlines('LIST') 
-           
+
         # Get list of directory contents without additional information
         files = []
         ftp.retrlines('NLST', files.append) 
         print(files) 
-        
+
         # Check file size
         print("{} MB".format(ftp.size('mfwamglocep_2020120100_R20201202.nc')/1000000))
-            
+
     except ftplib.all_errors as e:
         print('FTP error:', e)
 """
 
 
 def calc_relative_direction(ship_dir, ww_dir):
-  """
-  determine relative wind direction for ships going north, east, south or west
+    """
+    determine relative wind direction for ships going north, east, south or west
 
-  Parameters
-  ----------
-  ship_dir : str, in ("N", "E", "S", "W")
-    direction the ship is going
-  ww_dir : array, float
-    array of relative wind directions [0 - 360]
-  """
-  if ship_dir not in ("N", "E", "S", "W"):
-    raise Exception("Direction not accepted.")
-  ww_360 = ww_dir
-  ww_360[ww_360 < 0] = 360 + ww_dir[0]
-  if ship_dir in ("N"):
-    dir_4 = np.full((len(ww_dir), 1), 2)
-    dir_4[(ww_dir < 45) | (ww_dir > 315)] = 1
-    dir_4[(ww_dir > 135) & (ww_dir < 225)] = 3
-  if ship_dir in ("E"):
-    dir_4 = np.full((len(ww_dir), 1), 2)
-    dir_4[(ww_dir > 45) & (ww_dir < 135)] = 1
-    dir_4[(ww_dir > 225) & (ww_dir < 315)] = 3
-  if ship_dir in ("W"):
-    dir_4 = np.full((len(ww_dir), 1), 2)
-    dir_4[(ww_dir > 45) & (ww_dir < 135)] = 3
-    dir_4[(ww_dir > 225) & (ww_dir < 315)] = 1
-  if ship_dir in ("S"):
-    dir_4 = np.full((len(ww_dir), 1), 2)
-    dir_4[(ww_dir < 45) | (ww_dir > 315)] = 3
-    dir_4[(ww_dir > 135) & (ww_dir < 225)] = 1
-  return dir_4
+    Parameters
+    ----------
+    ship_dir : str, in ("N", "E", "S", "W")
+      direction the ship is going
+    ww_dir : array, float
+      array of relative wind directions [0 - 360]
+    """
+    if ship_dir not in ("N", "E", "S", "W"):
+        raise Exception("Direction not accepted.")
+    ww_360 = ww_dir
+    ww_360[ww_360 < 0] = 360 + ww_dir[0]
+    if ship_dir in ("N"):
+        dir_4 = np.full((len(ww_dir), 1), 2)
+        dir_4[(ww_dir < 45) | (ww_dir > 315)] = 1
+        dir_4[(ww_dir > 135) & (ww_dir < 225)] = 3
+    if ship_dir in ("E"):
+        dir_4 = np.full((len(ww_dir), 1), 2)
+        dir_4[(ww_dir > 45) & (ww_dir < 135)] = 1
+        dir_4[(ww_dir > 225) & (ww_dir < 315)] = 3
+    if ship_dir in ("W"):
+        dir_4 = np.full((len(ww_dir), 1), 2)
+        dir_4[(ww_dir > 45) & (ww_dir < 135)] = 3
+        dir_4[(ww_dir > 225) & (ww_dir < 315)] = 1
+    if ship_dir in ("S"):
+        dir_4 = np.full((len(ww_dir), 1), 2)
+        dir_4[(ww_dir < 45) | (ww_dir > 315)] = 3
+        dir_4[(ww_dir > 135) & (ww_dir < 225)] = 1
+    return dir_4
+
 
 def concatenate_cmems(cm_wave, cm_phy, ship_param, ship_dir):
-  """
-  concatenate the variables from cmems wave and physics datasets
+    """
+    concatenate the variables from cmems wave and physics datasets
 
-  Parameters
-  ----------
-  cm_wave : net4CDF dataset
-    netcdf file cmems wave
-  cm_phy : net4CDF dataset
-    netdcf file cmems physics
-  ship_param : int
-    ship variable that is used in model later (e.g. draft or length)
-  ship_dir str, in ("N", "E", "S", "W")
-    direction the ship is going
-  """
-  array = (np.flipud(cm_wave["VHM0"][0, :, :]).data) # extract data from CMEMS
-  dim = array.shape
-  l = np.prod(dim) # get number of "pixel"
+    Parameters
+    ----------
+    cm_wave : net4CDF dataset
+      netcdf file cmems wave
+    cm_phy : net4CDF dataset
+      netdcf file cmems physics
+    ship_param : int
+      ship variable that is used in model later (e.g. draft or length)
+    ship_dir str, in ("N", "E", "S", "W")
+      direction the ship is going
+    """
+    array = (np.flipud(cm_wave["VHM0"][0, :, :]).data)  # extract data from CMEMS
+    dim = array.shape
+    l = np.prod(dim)  # get number of "pixel"
 
-  # extract parameters from cmems dataset and reshape to array with dimension of 1 x number of pixel
-  vhm = (np.flipud(cm_wave["VHM0"][0, :, :])).reshape(l, 1)
-  vtm = (np.flipud(cm_wave["VTPK"][0, :, :])).reshape(l, 1)
-  temp = (np.flipud(cm_phy["thetao"][0, 1, :, :])).reshape(l, 1)
-  sal = (np.flipud(cm_phy["so"][0, 1, :, :])).reshape(l, 1)
-  # create column for ship parameter 
-  ship = np.full((l, 1), ship_param) 
-  # calculate relative direction of wind depending on ship direction
-  dir = calc_relative_direction(ship_dir, (np.flipud(cm_wave["VMDR_WW"][0, :, :])).reshape(l, 1))
+    # extract parameters from cmems dataset and reshape to array with dimension of 1 x number of pixel
+    vhm = (np.flipud(cm_wave["VHM0"][0, :, :])).reshape(l, 1)
+    vtm = (np.flipud(cm_wave["VTPK"][0, :, :])).reshape(l, 1)
+    temp = (np.flipud(cm_phy["thetao"][0, 1, :, :])).reshape(l, 1)
+    sal = (np.flipud(cm_phy["so"][0, 1, :, :])).reshape(l, 1)
+    # create column for ship parameter
+    ship = np.full((l, 1), ship_param)
+    # calculate relative direction of wind depending on ship direction
+    dir = calc_relative_direction(ship_dir, (np.flipud(cm_wave["VMDR_WW"][0, :, :])).reshape(l, 1))
 
-  # concatenate parameters
-  a = np.concatenate((ship, vhm, vtm, temp, sal, dir), axis=1)
+    # concatenate parameters
+    a = np.concatenate((ship, vhm, vtm, temp, sal, dir), axis=1)
 
-  # create pd df from array
-  X_pred = pd.DataFrame(data=a,    # values
-              index=list(range(0, l)),    # 1st column as index
-              columns=["Draft", "VHM0", "VTPK", "thetao", "so", "dir_4"])  # 1st row as the column names
-  return X_pred
+    # create pd df from array
+    X_pred = pd.DataFrame(data=a,  # values
+                          index=list(range(0, l)),  # 1st column as index
+                          columns=["Draft", "VHM0", "VTPK", "thetao", "so", "dir_4"])  # 1st row as the column names
+    return X_pred
+
 
 def prepare_grid(cm_wave, cm_phy, ship_param, ship_dir, model):
-  """
-  prepare grid of SOGs
+    """
+    prepare grid of SOGs
 
-  Parameters
-  ----------
-  cm_wave : net4CDF dataset
-    netcdf file cmems wave
-  cm_phy : net4CDF dataset
-    netdcf file cmems physics
-  ship_param : int
-    ship variable that is used in model later (e.g. draft or length)
-  ship_dir str, in ("N", "E", "S", "W")
-    direction the ship is going
-  """
+    Parameters
+    ----------
+    cm_wave : net4CDF dataset
+      netcdf file cmems wave
+    cm_phy : net4CDF dataset
+      netdcf file cmems physics
+    ship_param : int
+      ship variable that is used in model later (e.g. draft or length)
+    ship_dir str, in ("N", "E", "S", "W")
+      direction the ship is going
+    """
 
-  X_pred = concatenate_cmems(cm_wave, cm_phy, ship_param, ship_dir)
-  
-  # extract shape from cmems data
-  input = (np.flipud(cm_wave["VHM0"][0, :, :]).data)
-  dim = input.shape
+    X_pred = concatenate_cmems(cm_wave, cm_phy, ship_param, ship_dir)
 
-  # predict SOG
-  # model = load('cms_routing/models/DTR_model.joblib') # import model
-  SOG_pred = model.predict(X_pred)
-  SOG_pred = SOG_pred.reshape(dim) # reshape to 'coordinates'
-  SOG_pred[input < -30000] = -5 # -32767.0 # mask data with negative value
+    # extract shape from cmems data
+    input = (np.flipud(cm_wave["VHM0"][0, :, :]))
+    dim = input.shape
 
-  return SOG_pred
+    # predict SOG
+    # model = load('cms_routing/models/DTR_model.joblib') # import model
+    SOG_pred = model.predict(X_pred)
+    SOG_pred = SOG_pred.reshape(dim)  # reshape to 'coordinates'
+    SOG_pred[input < -30000] = -5  # -32767.0 # mask data with negative value
+
+    return SOG_pred
 
 
-
-def calculateTimeGrid(SOG_E, SOG_N, SOG_S, SOG_W):
-    kmGridEW= np.load("lengthGridEW.npy")
-    kmGridNS= np.load("lengthGridNS.npy")
+def calculateTimeGrid(SOG_E, SOG_N, SOG_S, SOG_W, AOI):
+    kmGridEW = np.load("lengthGridEW.npy")
+    kmGridEW = kmGridEW[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    kmGridNS = np.load("lengthGridNS.npy")
+    kmGridNS = kmGridNS[AOI[2]:AOI[3], AOI[0]:AOI[1]]
 
     timeGridE = SOG_E
-    constE= 70/np.power(timeGridE, 3)
-    timeGridE80= np.cbrt(80/constE)
-    timeGridE60= np.cbrt(60/constE)
-    timeGridE = np.where(timeGridE < 0, 10000, (kmGridEW*1000)/(timeGridE*30.87))
-    timeGridE80 = np.where(timeGridE80 < 0, 10000, (kmGridEW*1000)/(timeGridE80*30.87))
-    timeGridE60 = np.where(timeGridE60 < 0, 10000, (kmGridEW*1000)/(timeGridE60*30.87))
-
+    constE = 70 / np.power(timeGridE, 3)
+    timeGridE80 = np.cbrt(80 / constE)
+    timeGridE60 = np.cbrt(60 / constE)
+    timeGridE = timeGridE[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridE80 = timeGridE80[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridE60 = timeGridE60[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridE = np.where(timeGridE < 0, 10000, (kmGridEW * 1000) / (timeGridE * 30.87))
+    timeGridE80 = np.where(timeGridE80 < 0, 10000, (kmGridEW * 1000) / (timeGridE80 * 30.87))
+    timeGridE60 = np.where(timeGridE60 < 0, 10000, (kmGridEW * 1000) / (timeGridE60 * 30.87))
 
     timeGridN = SOG_N
-    constN= 70/np.power(timeGridN, 3)
-    timeGridN80= np.cbrt(80/constN)
-    timeGridN60= np.cbrt(60/constN)
-    timeGridN = np.where(timeGridN < 0, 10000, (kmGridNS*1000)/(timeGridN*30.87))
-    timeGridN80 = np.where(timeGridN80 < 0, 10000, (kmGridNS*1000)/(timeGridN80*30.87))
-    timeGridN60 = np.where(timeGridN60 < 0, 10000, (kmGridNS*1000)/(timeGridN60*30.87))
+    constN = 70 / np.power(timeGridN, 3)
+    timeGridN80 = np.cbrt(80 / constN)
+    timeGridN60 = np.cbrt(60 / constN)
+    timeGridN = timeGridN[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridN80 = timeGridN80[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridN60 = timeGridN60[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridN = np.where(timeGridN < 0, 10000, (kmGridNS * 1000) / (timeGridN * 30.87))
+    timeGridN80 = np.where(timeGridN80 < 0, 10000, (kmGridNS * 1000) / (timeGridN80 * 30.87))
+    timeGridN60 = np.where(timeGridN60 < 0, 10000, (kmGridNS * 1000) / (timeGridN60 * 30.87))
 
     timeGridS = SOG_S
-    constS= 70/np.power(timeGridS, 3)
-    timeGridS80= np.cbrt(80/constS)
-    timeGridS60= np.cbrt(60/constS)
-    timeGridS = np.where(timeGridS < 0, 10000, (kmGridNS*1000)/(timeGridS*30.87))
-    timeGridS80 = np.where(timeGridS80 < 0, 10000, (kmGridNS*1000)/(timeGridS80*30.87))
-    timeGridS60 = np.where(timeGridS60 < 0, 10000, (kmGridNS*1000)/(timeGridS60*30.87))
-
-
+    constS = 70 / np.power(timeGridS, 3)
+    timeGridS80 = np.cbrt(80 / constS)
+    timeGridS60 = np.cbrt(60 / constS)
+    timeGridS = timeGridS[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridS80 = timeGridS80[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridS60 = timeGridS60[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridS = np.where(timeGridS < 0, 10000, (kmGridNS * 1000) / (timeGridS * 30.87))
+    timeGridS80 = np.where(timeGridS80 < 0, 10000, (kmGridNS * 1000) / (timeGridS80 * 30.87))
+    timeGridS60 = np.where(timeGridS60 < 0, 10000, (kmGridNS * 1000) / (timeGridS60 * 30.87))
 
     timeGridW = SOG_W
-    constW= 70/np.power(timeGridW, 3)
-    timeGridW80= np.cbrt(80/constW)
-    timeGridW60= np.cbrt(60/constW)
-    timeGridW = np.where(timeGridW < 0, 10000, (kmGridEW*1000)/(timeGridW*30.87))
-    timeGridW80 = np.where(timeGridW80 < 0, 10000, (kmGridEW*1000)/(timeGridW80*30.87))
-    timeGridW60 = np.where(timeGridW60 < 0, 10000, (kmGridEW*1000)/(timeGridW60*30.87))
+    constW = 70 / np.power(timeGridW, 3)
+    timeGridW80 = np.cbrt(80 / constW)
+    timeGridW60 = np.cbrt(60 / constW)
+    timeGridW = timeGridW[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridW80 = timeGridW80[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridW60 = timeGridW60[AOI[2]:AOI[3], AOI[0]:AOI[1]]
+    timeGridW = np.where(timeGridW < 0, 10000, (kmGridEW * 1000) / (timeGridW * 30.87))
+    timeGridW80 = np.where(timeGridW80 < 0, 10000, (kmGridEW * 1000) / (timeGridW80 * 30.87))
+    timeGridW60 = np.where(timeGridW60 < 0, 10000, (kmGridEW * 1000) / (timeGridW60 * 30.87))
 
-    timeGrids=[[timeGridN80, timeGridS80, timeGridE80, timeGridW80],[timeGridN, timeGridS, timeGridE, timeGridW],[timeGridN60, timeGridS60, timeGridE60, timeGridW60]]
+    timeGrids = [[timeGridN80, timeGridS80, timeGridE80, timeGridW80], [timeGridN, timeGridS, timeGridE, timeGridW],
+                 [timeGridN60, timeGridS60, timeGridE60, timeGridW60]]
     return timeGrids
-
 
 
 '''
@@ -228,6 +241,7 @@ SOG_pred = np.ma.masked_where(np.flipud(np.ma.getmask(ds[parameter][0, :, :])), 
 SOG_pred.fill_value = -32767
 # SOG_pred =np.flipud(SOG_pred)
 '''
+
 
 # # create actual grids for different ship directions
 # ship_param = 12
