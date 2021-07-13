@@ -145,7 +145,7 @@ def concatenate_cmems(cm_wave, cm_phy, ship_param, ship_dir):
               columns=["Draft", "VHM0", "VTPK", "thetao", "so", "dir_4"])  # 1st row as the column names
   return X_pred
 
-def prepare_grid(cm_wave, cm_phy, ship_param, ship_dir):
+def prepare_grid(cm_wave, cm_phy, ship_param, ship_dir, model):
   """
   prepare grid of SOGs
 
@@ -168,7 +168,7 @@ def prepare_grid(cm_wave, cm_phy, ship_param, ship_dir):
   dim = input.shape
 
   # predict SOG
-  model = load('https://github.com/jsten07/cms_routing/blob/main/models/DTR_model.joblib?raw=true') # import model
+  # model = load('cms_routing/models/DTR_model.joblib') # import model
   SOG_pred = model.predict(X_pred)
   SOG_pred = SOG_pred.reshape(dim) # reshape to 'coordinates'
   SOG_pred[input < -30000] = -5 # -32767.0 # mask data with negative value
