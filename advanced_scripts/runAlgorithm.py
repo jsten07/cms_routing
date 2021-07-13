@@ -31,7 +31,7 @@ import random
 
 
 def runAlgorithm(startpoint, endpoint, startTime, endTime, timeGrids, population, offspring, generations ):
- timeGrid=timeGrids[0]
+ timeGrid=timeGrids[0][0]
     
  class MyProblem(Problem):
 
