@@ -38,32 +38,52 @@ def eleminateDuplicates(start, route):
     return route
 
 def crossover(route1, route2, timeGrid):
-  randomNumber = math.floor(random.random()*len(route1))
-  crossoverPoint1 = route1[randomNumber]
-  index= closest_node(crossoverPoint1, route2)
-  crossoverPoint2 = route2[index]
+  timeGridNew= [[random.random() for i in range(timeGrid.shape[1])] for j in range(timeGrid.shape[0])]
+  timeGridNew = np.where(timeGrid >999, timeGrid, timeGridNew)
+
+  index1 = math.floor(random.random()*min(len(route1), len(route2)))
+  index2 = min(len(route2) -1, len(route1)-1, (index1 + math.floor(random.random()*(len(route1) -index1)+ 10)))
+
+  crossoverPoint1 = route1[index1]
+  #index= closest_node(crossoverPoint1, route2)
+
+  crossoverPoint2 = route2[index2]
+
+
   
   
-  crossoverRoute, weight = route_through_array(timeGrid, crossoverPoint1[0:2], crossoverPoint2[0:2], fully_connected=False, geometric=True)
-  crossoverRoute= makeArrays(crossoverRoute)
+  crossoverRoute1, weight = route_through_array(timeGridNew, crossoverPoint1[0:2], crossoverPoint2[0:2], fully_connected=False, geometric=True)
+  crossoverRoute1= makeArrays(crossoverRoute1)
+
+
+  crossoverPoint1 = route2[index1]
+  #index= closest_node(crossoverPoint1, route2)
+
+  crossoverPoint2 = route1[index2]
+  crossoverRoute2, weight = route_through_array(timeGridNew, crossoverPoint1[0:2], crossoverPoint2[0:2], fully_connected=False, geometric=True)
+  crossoverRoute2= makeArrays(crossoverRoute2)
+
   speed= speeds[math.floor(random.random()*3)]
-  for j in range(len(crossoverRoute)):
-      crossoverRoute[j].append(speed) 
+  for j in range(len(crossoverRoute1)):
+      crossoverRoute1[j].append(speed) 
+
+  for i in range(len(crossoverRoute2)):
+      crossoverRoute2[i].append(speed) 
+      
   child1= []
   child2= []
-  for i in range(randomNumber):
+  for i in range(index1-1):
     child1.append(route1[i])
-  for i in range(index):
     child2.append(route2[i])
-  for x in crossoverRoute:
+  for x in crossoverRoute1:
     child1.append(x)
-  for i in range(len(crossoverRoute) -1, 0, -1):
-    child2.append(crossoverRoute[i])
-  for i in range(index +1,len(route2)):
+  for x in crossoverRoute2:
+    child2.append(x)
+  for i in range(index2 +1,len(route2)):
     child1.append(route2[i])
-  for i in range(randomNumber,len(route1)):
+  for i in range(index2 +1,len(route1)):
     child2.append(route1[i])
-  return[child1, child2, crossoverRoute]
+  return[child1, child2, crossoverRoute1]
 
 
 class SpatialOnePointCrossover(Crossover):
@@ -73,7 +93,7 @@ class SpatialOnePointCrossover(Crossover):
  def __init__(self, timeGrid, n_points, **kwargs):
     super().__init__(2, 2, 1.0) # (n_parents,n_offsprings,probability)
     self.n_points = n_points
-    self.TimeGrid = newGrid= [[random.random() for i in range(timeGrid.shape[1])] for j in range(timeGrid.shape[0])]
+    self.TimeGrid = timeGrid
  def _do(self, problem, X, **kwargs):
     #print(X)
     _, n_matings= X.shape[0],X.shape[1]
@@ -92,5 +112,4 @@ class SpatialOnePointCrossover(Crossover):
     child_1= eleminateDuplicates(0, childs[0])
     child_2= eleminateDuplicates(0, childs[1]) 
         
-    return np.array([[parent1_index, list(child_1)], [parent2_index, list(child_2)]])
-
+    return np.array([[parent1_index, list(childs[0])], [parent2_index, list(childs[1])]])

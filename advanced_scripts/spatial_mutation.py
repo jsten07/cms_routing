@@ -13,12 +13,14 @@ def makeArrays(route):
       routeNew.append(list(x))
     return routeNew
 
-N=100
+
 
 # function to randomly change a certain patch
 
 def mutation(crossover_child, timeGrid):
     #print(crossover_child)
+    timeGridNew= [[random.random() for i in range(timeGrid.shape[1])] for j in range(timeGrid.shape[0])]
+    timeGridNew = np.where(timeGrid >999, timeGrid, timeGridNew)
     crossover_child_split_list= []
     
     crossover_child = makeArrays(crossover_child)
@@ -29,9 +31,9 @@ def mutation(crossover_child, timeGrid):
     endIndex= math.floor(startIndex + (random.random() * (len(crossover_child)-startIndex)))
     endpoint= crossover_child[endIndex]
 
-    #print(startpoint, endpoint)
+    print(startpoint, endpoint)
     # recalculate route from end point of list 1 to sarting point of list 3
-    route, weight = route_through_array(timeGrid, startpoint[0:2], endpoint[0:2], 
+    route, weight = route_through_array(timeGridNew, startpoint[0:2], endpoint[0:2], 
                                         fully_connected=False, geometric=True)
     route_list = makeArrays(route)
     speed= speeds[math.floor(random.random()*3)]
@@ -42,7 +44,7 @@ def mutation(crossover_child, timeGrid):
     third_component = makeArrays(crossover_child[endIndex:len(crossover_child)])
     #combine all the sections to a final mutated route
     mutated_child = first_component + second_component + third_component 
-    #print(mutated_child)
+    print(mutated_child)
     
     return mutated_child
 
@@ -53,7 +55,7 @@ class SpatialNPointMutation(Mutation):
         super().__init__()
         self.prob = prob
         self.point_mutation_probability = point_mutation_probability
-        self.TimeGrid= [[random.random() for i in range(timeGrid.shape[1])] for j in range(timeGrid.shape[0])]
+        self.TimeGrid= timeGrid
     def _do(self, problem, X, **kwargs):
         offspring=[]
         #print(X)

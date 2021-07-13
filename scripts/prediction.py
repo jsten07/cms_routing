@@ -175,6 +175,52 @@ def prepare_grid(cm_wave, cm_phy, ship_param, ship_dir, model):
 
   return SOG_pred
 
+
+
+def calculateTimeGrid(SOG_E, SOG_N, SOG_S, SOG_W):
+    kmGridEW= np.load("lengthGridEW.npy")
+    kmGridNS= np.load("lengthGridNS.npy")
+
+    timeGridE = SOG_E
+    constE= 70/np.power(timeGridE, 3)
+    timeGridE80= np.cbrt(80/constE)
+    timeGridE60= np.cbrt(60/constE)
+    timeGridE = np.where(timeGridE < 0, 10000, (kmGridEW*1000)/(timeGridE*30.87))
+    timeGridE80 = np.where(timeGridE80 < 0, 10000, (kmGridEW*1000)/(timeGridE80*30.87))
+    timeGridE60 = np.where(timeGridE60 < 0, 10000, (kmGridEW*1000)/(timeGridE60*30.87))
+
+
+    timeGridN = SOG_N
+    constN= 70/np.power(timeGridN, 3)
+    timeGridN80= np.cbrt(80/constN)
+    timeGridN60= np.cbrt(60/constN)
+    timeGridN = np.where(timeGridN < 0, 10000, (kmGridNS*1000)/(timeGridN*30.87))
+    timeGridN80 = np.where(timeGridN80 < 0, 10000, (kmGridNS*1000)/(timeGridN80*30.87))
+    timeGridN60 = np.where(timeGridN60 < 0, 10000, (kmGridNS*1000)/(timeGridN60*30.87))
+
+    timeGridS = SOG_S
+    constS= 70/np.power(timeGridS, 3)
+    timeGridS80= np.cbrt(80/constS)
+    timeGridS60= np.cbrt(60/constS)
+    timeGridS = np.where(timeGridS < 0, 10000, (kmGridNS*1000)/(timeGridS*30.87))
+    timeGridS80 = np.where(timeGridS80 < 0, 10000, (kmGridNS*1000)/(timeGridS80*30.87))
+    timeGridS60 = np.where(timeGridS60 < 0, 10000, (kmGridNS*1000)/(timeGridS60*30.87))
+
+
+
+    timeGridW = SOG_W
+    constW= 70/np.power(timeGridW, 3)
+    timeGridW80= np.cbrt(80/constW)
+    timeGridW60= np.cbrt(60/constW)
+    timeGridW = np.where(timeGridW < 0, 10000, (kmGridEW*1000)/(timeGridW*30.87))
+    timeGridW80 = np.where(timeGridW80 < 0, 10000, (kmGridEW*1000)/(timeGridW80*30.87))
+    timeGridW60 = np.where(timeGridW60 < 0, 10000, (kmGridEW*1000)/(timeGridW60*30.87))
+
+    timeGrids=[[timeGridN80, timeGridS80, timeGridE80, timeGridW80],[timeGridN, timeGridS, timeGridE, timeGridW],[timeGridN60, timeGridS60, timeGridE60, timeGridW60]]
+    return timeGrids
+
+
+
 '''
 # created masked array
 import numpy.ma as ma

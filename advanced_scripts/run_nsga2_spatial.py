@@ -93,7 +93,7 @@ timeGrid= timeGridE
 
 timeGrids=[[timeGridN80, timeGridS80, timeGridE80, timeGridW80],[timeGridN, timeGridS, timeGridE, timeGridW],[timeGridN60, timeGridS60, timeGridE60, timeGridW60]]
 
-#N= 100
+
 #timeGrid= np.array([[random.random() for i in range(N)] for j in range(N)])
 
 

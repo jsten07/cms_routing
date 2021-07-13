@@ -117,3 +117,28 @@ def calculate_fuelUse(routes,timeGrids):
 
  return(np.array(all_fuel))
 
+def calculate_MinDistance(routes,Grids):
+
+  all_KM = []
+  for route in routes:
+    #print("single route")
+    #print(route)
+    sumKM = 0
+    routeList = makeArrays(route[1])
+    routeWithBearing = calculateBearing(routeList)
+    for x in range(len(routeWithBearing)-1):
+      coordinate = routeWithBearing[x]
+    #print("timeGrid", timeGrids[0][10][10])
+        
+      bearing = coordinate[3]
+
+      #print(speedIndex, bearing)
+      #print(coordinate)
+      #array = np.array(timeGrids[speedIndex][bearing])
+      #print(array.shape)
+      timeGrid =  Grids[bearing]
+      sumKM = sumKM + timeGrid[coordinate[0]][coordinate[1]]
+    all_KM.append(sumKM)
+
+  return all_KM
+

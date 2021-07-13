@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import math
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import yaml
@@ -8,7 +9,7 @@ from skimage.graph import route_through_array
 def makeArrays(route):
     routeNew = []
     for x in route:
-      routeNew.append(x)
+      routeNew.append(list(x))
     return routeNew
 
 
@@ -19,10 +20,37 @@ def initialize_spatial(pop_size, startpoint, endpoint, timeGrid):
  # read land use map dedending on the year
  # iterate to get multiple realizations for the initial population
  #print(timeGrid.shape[0])
- for i in range(1,pop_size+1):
+ route, weight = route_through_array(timeGrid, startpoint, endpoint, fully_connected=False, geometric=True)
+ route1= makeArrays(route)
+ all_routes.append([1, route1])
+
+ middle = (startpoint[0] + endpoint[0])/2
+ middle2 = (startpoint[1] + endpoint[1])/2
+ print(middle)
+ middlePoint = (middle, middle2)
+ print(startpoint)
+ print(middlePoint)
+
+ 
+
+
+
+ for i in range(1,math.floor(pop_size/2)+1):
      timeGridNew= [[random.random() for i in range(timeGrid.shape[1])] for j in range(timeGrid.shape[0])]
-     route, weight = route_through_array(timeGridNew, startpoint, endpoint, fully_connected=False, geometric=True)
-     route= makeArrays(route)
+     timeGridNew = np.where(timeGrid >999, timeGrid, timeGridNew)
+     change= (random.random() *150)
+     middlePointNew = (math.floor(middlePoint[0] + change), math.floor(middlePoint[1]))
+     print(middlePointNew)
+     route1, weight = route_through_array(timeGridNew, startpoint, middlePointNew, fully_connected=False, geometric=True)
+     route2, weight = route_through_array(timeGridNew, middlePointNew, endpoint, fully_connected=False, geometric=True)
+     route= route1[:-1] + route2
+     route= makeArrays(route) 
+     all_routes.append([i, route])
+     middlePointNew = (math.floor(middlePoint[0] - change), math.floor(middlePoint[1]))
+     route1, weight = route_through_array(timeGridNew, startpoint, middlePointNew, fully_connected=False, geometric=True)
+     route2, weight = route_through_array(timeGridNew, middlePointNew, endpoint, fully_connected=False, geometric=True)
+     route= route1[:-1] + route2
+     route= makeArrays(route) 
      all_routes.append([i, route])
 
  #use uniform distribution to select 30% of the cells 
