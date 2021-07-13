@@ -39,10 +39,10 @@ def initialize_spatial(pop_size, startpoint, endpoint, timeGrid):
 
  middle = (startpoint[0] + endpoint[0])/2
  middle2 = (startpoint[1] + endpoint[1])/2
- print(middle)
+ #print(middle)
  middlePoint = (middle, middle2)
- print(startpoint)
- print(middlePoint)
+ #print(startpoint)
+ #print(middlePoint)
 
  
 
@@ -53,7 +53,7 @@ def initialize_spatial(pop_size, startpoint, endpoint, timeGrid):
      timeGridNew = np.where(timeGrid >999, timeGrid, timeGridNew)
      change= (random.random() *150)
      middlePointNew = (math.floor(middlePoint[0] + change), math.floor(middlePoint[1]))
-     print(middlePointNew)
+     #print(middlePointNew)
      route1, weight = route_through_array(timeGridNew, startpoint, middlePointNew, fully_connected=False, geometric=True)
      route2, weight = route_through_array(timeGridNew, middlePointNew, endpoint, fully_connected=False, geometric=True)
      route= route1[:-1] + route2
