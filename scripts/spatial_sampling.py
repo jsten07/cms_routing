@@ -14,8 +14,7 @@ class SpatialSampling(Sampling):
     self.endpoint = endpoint
     self.timeGrid = timeGrid
  def _do(self, problem, n_samples, **kwargs):
-    landusemaps_np = initial_population.initialize_spatial(n_samples, self.startpoint, self.endpoint, self.timeGrid)
-    #print(landusemaps_np)
-    return landusemaps_np
+    routes = initial_population.initialize_spatial(n_samples, self.startpoint, self.endpoint, self.timeGrid)
+    return routes
 
 

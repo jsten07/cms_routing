@@ -31,6 +31,26 @@ import random
 
 
 def runAlgorithm(startpoint, endpoint, startTime, endTime, timeGrids, population, offspring, generations ):
+ """
+    run the algorithm and return the result as a pymoo result object https://pymoo.org/interface/result.html
+
+    Parameters
+    ----------
+    startpoint: array, [cellX, cellY]
+      the startpoint of the route
+    endpoint: array, [cellX, cellY]
+      the endpoint of the route
+    startTime: str, day.month.year hours:minutes
+      start time of the ship
+    endTime: str, day.month.year hours:minutes
+      booked port time, the ship shlould arrive
+    population: int
+      the wanted population, number of routes that will be returned
+    offspirng: int
+      number of new routes calculated with each iteration
+    generations: int
+      number of iterations
+ """
  timeGrid=timeGrids[0][0]
     
  class MyProblem(Problem):
@@ -51,6 +71,7 @@ def runAlgorithm(startpoint, endpoint, startTime, endTime, timeGrids, population
 
  problem = MyProblem()
  print(problem)
+ # load own sampling, crossover and mutation method
  algorithm = NSGA2(
     pop_size=population,
     n_offsprings= offspring,
@@ -61,6 +82,7 @@ def runAlgorithm(startpoint, endpoint, startTime, endTime, timeGrids, population
  )
  termination = get_termination("n_gen", generations)
 
+ # run algorithm itself
  res = minimize(problem,
                algorithm,
                termination,

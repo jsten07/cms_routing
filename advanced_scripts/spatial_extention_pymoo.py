@@ -112,18 +112,8 @@ def _new_crossover_do(self, problem, pop, parents, **kwargs):
         # execute the crossover
         _X = self._do(problem, X, **kwargs)
 
-        #print("X", X)
-        #print("_X", _X)
-
         X = _X
 
-        # flatten the array to become a 2d-array
-        #print(X.shape)
-        #if len(X.shape)>3:
-        #    X = X.reshape(offspring, X.shape[-2], X.shape[-1])
-        #else:
-        #    X = X.reshape(-1, X.shape[-1])
-        # create a population object
         off = Population.new("X", X)
 
         return off

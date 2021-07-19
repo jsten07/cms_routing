@@ -6,6 +6,14 @@ import math
 from pymoo.model.crossover import Crossover
 
 def makeArrays(route):
+    """
+    the route returned by the muation is a array of tuples. It needs to be an array
+
+    Parameters
+    ----------
+    route : array
+      one route the ship is going. Containing array of [gridCooridinateX, gridCoordinateY, speed]
+    """
     routeNew = []
     for x in route:
       routeNew.append(list(x))
@@ -13,17 +21,49 @@ def makeArrays(route):
 
 
 def closest_node(node, nodes):
+    """
+    find the closest point to this point
+
+    Parameters
+    ----------
+    node : array
+      one point where the nearest should be found
+    nodes : array of node
+      points where the nearest should be found from
+    """
     nodes = np.asarray(nodes)
     dist_2 = np.sum((nodes - node)**2, axis=1)
     return np.argmin(dist_2)
 
 def findDuplicate(node, nodes, index):
+    """
+    proof if the ship goes through one point twice
+
+    Parameters
+    ----------
+    node : array
+      one point which should be proofed
+    nodes : array of node
+      points which should be compared with node
+    index : int
+      number where to start in nodes
+    """
     nodes= nodes[index: len(nodes)]
     nodes = np.asarray(nodes)
     dist_2 = np.sum((nodes - node)**2, axis=1)
     return np.where(dist_2 == 0)
 
 def eleminateDuplicates(start, route):
+    """
+    eleminate points, where the ship goes through twice
+
+    Parameters
+    ----------
+    start : int
+      index where to start on the route 
+    route : array 
+      route which shcould be proofed on duplicates
+    """
     for i in range(start, len(route)):
       duplicate=findDuplicate(route[i], route, i)
       duplicate=duplicate[0]
@@ -34,6 +74,18 @@ def eleminateDuplicates(start, route):
     return route
 
 def crossover(route1, route2, timeGrid):
+  """
+    combines two routes of the population to two new routes
+
+    Parameters
+    ----------
+    route1 : array
+      first route which should be used
+    route2 : array
+      second route which schould be used
+    timeGrid: array
+      a grid containing the time for one specific context of bearing and speed
+    """
   timeGridNew= [[random.random() for i in range(timeGrid.shape[1])] for j in range(timeGrid.shape[0])]
   timeGridNew = np.where(timeGrid >999, timeGrid, timeGridNew)
   
@@ -41,19 +93,15 @@ def crossover(route1, route2, timeGrid):
   index2 = min(len(route2) -1, len(route1)-1, (index1 + math.floor(random.random()*(len(route1) -index1)+ 10)))
 
   crossoverPoint1 = route1[index1]
-  #index= closest_node(crossoverPoint1, route2)
 
   crossoverPoint2 = route2[index2]
 
-
-  
   
   crossoverRoute1, weight = route_through_array(timeGridNew, crossoverPoint1[0:2], crossoverPoint2[0:2], fully_connected=False, geometric=True)
   crossoverRoute1= makeArrays(crossoverRoute1)
 
 
   crossoverPoint1 = route2[index1]
-  #index= closest_node(crossoverPoint1, route2)
 
   crossoverPoint2 = route1[index2]
   crossoverRoute2, weight = route_through_array(timeGridNew, crossoverPoint1[0:2], crossoverPoint2[0:2], fully_connected=False, geometric=True)
@@ -75,7 +123,7 @@ def crossover(route1, route2, timeGrid):
     child2.append(route1[i])
   return[child1, child2, crossoverRoute1]
 
-
+#class to perform crossover
 class SpatialOnePointCrossover(Crossover):
 
 
@@ -87,16 +135,12 @@ class SpatialOnePointCrossover(Crossover):
  def _do(self, problem, X, **kwargs):
     #print(X)
     _, n_matings= X.shape[0],X.shape[1]
-    # child land use maps
     child_1 = []
     child_2 = []
     parent1_index = X[0][0][0]
     parent2_index = X[1][0][0]
     parent1 = X[0][0][1]
     parent2 = X[1][0][1]
-    #print("parent1",parent1,"parent2", parent2)
-    #print(rows)
-    #print(protectedArea.shape)
     
     childs=crossover(parent1,parent2, self.TimeGrid)
     child_1= eleminateDuplicates(0, childs[0])

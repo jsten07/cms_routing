@@ -8,6 +8,14 @@ speeds=[0.8, 0.7, 0.6]
 
 
 def makeArrays(route):
+    """
+    the route returned by the muation is a array of tuples. It needs to be an array
+
+    Parameters
+    ----------
+    route : array
+      one route the ship is going. Containing array of [gridCooridinateX, gridCoordinateY, speed]
+    """
     routeNew = []
     for x in route:
       routeNew.append(list(x))
@@ -18,7 +26,14 @@ def makeArrays(route):
 # function to randomly change a certain patch
 
 def mutation(crossover_child, timeGrid):
-    #print(crossover_child)
+    """
+    mutates one route, so changes a random part of it
+
+    Parameters
+    ----------
+    crossover_child : array
+      one route the ship is going, returned by the crossover
+    """
     timeGridNew= [[random.random() for i in range(timeGrid.shape[1])] for j in range(timeGrid.shape[0])]
     timeGridNew = np.where(timeGrid >999, timeGrid, timeGridNew)
     crossover_child_split_list= []
@@ -31,7 +46,6 @@ def mutation(crossover_child, timeGrid):
     endIndex= math.floor(startIndex + (random.random() * (len(crossover_child)-startIndex)))
     endpoint= crossover_child[endIndex]
 
-    #print(startpoint, endpoint)
     # recalculate route from end point of list 1 to sarting point of list 3
     route, weight = route_through_array(timeGridNew, startpoint[0:2], endpoint[0:2], 
                                         fully_connected=False, geometric=True)
