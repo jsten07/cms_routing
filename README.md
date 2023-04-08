@@ -1,4 +1,4 @@
-# Ship Routing Algorithms for Just-In-Time and Energy Efficient Voyages – Comparing Simple and Advanced Implementations of a Genetic Algorithm
+# Ship Routing Algorithms for Just-In-Time and Energy Efficient Voyages – Comparing Simple and Advanced Implementations of a Genetic Algorithm to reduce fuel consumption
 
 Rising fuel costs, the ever-increasing number of regulations and their tightening demonstrates the need to minimize fuel consumption in container shipping. With the development of an interactive Jupyter notebook, we want to meet this need. The developed script is intended to assist in planning fuel-saving routes and takes into account the engine power of the vessel, the condition of the weather and the sea, and also possible just-in-time deadlines. 
 
